@@ -1,8 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+
+#################################################################################
+#	
+#	AdventureProjects coding sample based on:
+#	https://github.com/AdventureProjects/EngInterview
+#
+#	John Walter
+#	gearslap@gmail.com
+#	801-319-5747
+#	https://www.mountainproject.com/u/jtwalter//105837334
+#
+#################################################################################
 
 import sys
-# import os
-# import re
 
 app_name = 'RoboStacker'
 
@@ -80,13 +90,18 @@ class Stacker:
 				self.rm(num1)
 				self.add(num2)
 
-
+'''
+	Functions
+'''
 
 
 def exit_stacker():
 	print 'Exiting ' + app_name
 	exit()
 
+'''
+	Output help commands
+'''
 def usage():
 	print "\tsize [n]:\t\tAdjusts the number of slots."
 	print "\tadd [slot]:\t\tAdds a block to the specified slot."
@@ -95,6 +110,10 @@ def usage():
 	print "\treplay [n]:\t\tReplays the last n commands."
 	print "\tundo [n]:\t\tUndo the last n commands."
 
+'''
+	Method to execute commands 
+	useful for sending commands through same process
+'''
 def execute_command(cmd):
 	global commands
 	cmd_arr = cmd.split(' ')
@@ -117,6 +136,10 @@ def execute_command(cmd):
 		
 
 
+'''
+	Main program
+'''
+
 # initiate Stacker object
 stacker = Stacker()
 print "Welcome to " + app_name + ". Type 'size [n]' to init (type 'help' for a list of commands)"
@@ -128,6 +151,7 @@ while True:
 	# split the command on space
 	cmd_arr = line.split(' ')
 
+	# administrative commands
 	if cmd_arr[0] == 'stacker.count':
 		print len(stacker.slots)
 
@@ -140,19 +164,24 @@ while True:
 	if cmd_arr[0] == 'commands':
 		print commands
 
+	# check to see if command in allowed_commands
 	if cmd_arr[0] not in allowed_commands:
 		print line + " is not a recognized command. Type 'help' to get a list of commands"
 	else:
+		# check to see if second argument is an int
 		try:
 			num = int(cmd_arr[1])
 		except ValueError:
 			print "You must provide an integer as the argument for your commands"
 			continue
 
+		# only store these commands in the commands list
+		# send commands through the execute_commands function
 		if cmd_arr[0] in ['size', 'add', 'rm', 'mv']:
 			execute_command(line)
 			commands.insert(0,line)
 
+		# if undo execute the reverse of each command
 		if cmd_arr[0] == 'undo':
 
 			if len(commands) < num:
@@ -170,6 +199,7 @@ while True:
 						stacker.size(int(-tmp_arr[1]))
 				stacker.print_slots()
 
+		# replay commands
 		if cmd_arr[0] == 'replay':
 
 			if len(commands) < num:
