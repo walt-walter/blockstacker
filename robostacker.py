@@ -160,6 +160,7 @@ while True:
 
 	if cmd_arr[0] == 'help':
 		usage()
+		continue
 
 	if cmd_arr[0] == 'commands':
 		print commands
@@ -168,44 +169,47 @@ while True:
 	if cmd_arr[0] not in allowed_commands:
 		print line + " is not a recognized command. Type 'help' to get a list of commands"
 	else:
-		# check to see if second argument is an int
-		try:
-			num = int(cmd_arr[1])
-		except ValueError:
-			print "You must provide an integer as the argument for your commands"
+		if len(cmd_arr) > 1:
+			# check to see if second argument is an int
+			try:
+				num = int(cmd_arr[1])
+			except ValueError:
+				print "You must provide an integer as the argument for your commands"
+				continue
+
+			# only store these commands in the commands list
+			# send commands through the execute_commands function
+			if cmd_arr[0] in ['size', 'add', 'rm', 'mv']:
+				execute_command(line)
+				commands.insert(0,line)
+
+			# if undo execute the reverse of each command
+			if cmd_arr[0] == 'undo':
+
+				if len(commands) < num:
+					print 'there are only ' + str(len(commands)) + ' commands stored in memory'
+				else:
+					for i in range(0, num):
+						tmp_arr = commands[i].split(' ')
+						if tmp_arr[0] == 'mv':
+							stacker.mv(int(tmp[2]), int(tmp_arr[1]))
+						elif tmp_arr[0] == 'add':
+							stacker.rm(int(tmp_arr[1]))
+						elif tmp_arr[0] == 'rm':
+							stacker.add(int(tmp_arr[1]))
+						elif tmp_arr[0] == 'size':
+							stacker.size(int(-tmp_arr[1]))
+					stacker.print_slots()
+
+			# replay commands
+			if cmd_arr[0] == 'replay':
+
+				if len(commands) < num:
+					print 'there are only ' + str(len(commands)) + ' commands stored in memory'
+				else:
+					for i in range(0, num):
+						execute_command(commands[i])
+					stacker.print_slots()
+		else:
+			print "You must provide an integer as the argument for your commans"
 			continue
-
-		# only store these commands in the commands list
-		# send commands through the execute_commands function
-		if cmd_arr[0] in ['size', 'add', 'rm', 'mv']:
-			execute_command(line)
-			commands.insert(0,line)
-
-		# if undo execute the reverse of each command
-		if cmd_arr[0] == 'undo':
-
-			if len(commands) < num:
-				print 'there are only ' + str(len(commands)) + ' commands stored in memory'
-			else:
-				for i in range(0, num):
-					tmp_arr = commands[i].split(' ')
-					if tmp_arr[0] == 'mv':
-						stacker.mv(int(tmp[2]), int(tmp_arr[1]))
-					elif tmp_arr[0] == 'add':
-						stacker.rm(int(tmp_arr[1]))
-					elif tmp_arr[0] == 'rm':
-						stacker.add(int(tmp_arr[1]))
-					elif tmp_arr[0] == 'size':
-						stacker.size(int(-tmp_arr[1]))
-				stacker.print_slots()
-
-		# replay commands
-		if cmd_arr[0] == 'replay':
-
-			if len(commands) < num:
-				print 'there are only ' + str(len(commands)) + ' commands stored in memory'
-			else:
-				for i in range(0, num):
-					execute_command(commands[i])
-				stacker.print_slots()
-			
